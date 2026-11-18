@@ -1,0 +1,7 @@
+name: personal-infrastructure
+description: My infrastructure setup. Doing that whole infrastructure as code thing I've been procastinating for way too long
+runtime: dotnet
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: csharp

@@ -1,0 +1,92 @@
+{
+  "_meta": {
+    "captured": "2026-11-18",
+    "source": "Cloudflare API v4 via MCP",
+    "account_id": "07e0cf4e7092208301d9db7ca03e3a77",
+    "account_name": "Giftmugweni@gmail.com's Account",
+    "note": "Builder input for the Pulumi import. IDs are authoritative."
+  },
+  "zones": [
+    {
+      "id": "b5ddc47f934ad6a572fba57177c9987f",
+      "name": "giftmugweni.com",
+      "status": "active",
+      "type": "full",
+      "plan": "free",
+      "name_servers": ["danica.ns.cloudflare.com", "syeef.ns.cloudflare.com"],
+      "registrar": "namecheap, inc. (id: 1066)",
+      "created_on": "2025-07-10T17:55:27.906503Z"
+    },
+    {
+      "id": "a13f8c191a8aca0bef3cc2652713d427",
+      "name": "fountainoflifefamily.com",
+      "status": "active",
+      "type": "full",
+      "plan": "free",
+      "name_servers": ["danica.ns.cloudflare.com", "syeef.ns.cloudflare.com"],
+      "created_on": "2026-07-25T20:45:54.617773Z"
+    }
+  ],
+  "dns_records": {
+    "giftmugweni.com": [
+      { "id": "837b3bfea47e202191738cbf27ea880e", "type": "A", "name": "api.giftmugweni.com", "content": "167.99.93.239", "proxied": true, "ttl": 1, "comment": null },
+      { "id": "0453b0293b736f52e42cfc8d0df0d7b8", "type": "A", "name": "api-cms.giftmugweni.com", "content": "167.99.93.239", "proxied": true, "ttl": 1, "comment": "API backend for cms system" },
+      { "id": "dd9b13e321317c6daa447846a391064c", "type": "AAAA", "name": "api-cms.giftmugweni.com", "content": "2a03:b0c0:1:e0:0:1:2719:3001", "proxied": true, "ttl": 1, "comment": "API backend for cms system" },
+      { "id": "da7d2ad4ef4886b06e87ab96eade5f26", "type": "A", "name": "api-erp-dashboard.giftmugweni.com", "content": "167.99.93.239", "proxied": true, "ttl": 1, "comment": "Api endpoint for Frappe Erpnext backend server api for custom dashboard" },
+      { "id": "8f280bfc9f8342356120b31ed6716366", "type": "AAAA", "name": "api-erp-dashboard.giftmugweni.com", "content": "2a03:b0c0:1:e0:0:1:2719:3001", "proxied": true, "ttl": 1, "comment": "Api endpoint for Frappe Erpnext backend server api for custom dashboard" },
+      { "id": "21400401ded9f089e5e187e3eecdadd8", "type": "A", "name": "api.erp-dashboard.giftmugweni.com", "content": "167.99.93.239", "proxied": false, "ttl": 1, "comment": "Api endpoint for Frappe Erpnext backend server api for custom dashboard" },
+      { "id": "881f56b6b762a17b40766f2515b7c175", "type": "AAAA", "name": "api.erp-dashboard.giftmugweni.com", "content": "2a03:b0c0:1:e0:0:1:2719:3001", "proxied": false, "ttl": 1, "comment": "Api endpoint for Frappe Erpnext backend server api for custom dashboard" },
+      { "id": "1fdb60bff6ed8abf0b334f7f7d704edd", "type": "A", "name": "giftmugweni.com", "content": "172.66.0.96", "proxied": true, "ttl": 1, "comment": null },
+      { "id": "817129a7831a5d5e8d14fb65af5eb800", "type": "A", "name": "giftmugweni.com", "content": "162.159.140.98", "proxied": true, "ttl": 1, "comment": null },
+      { "id": "6e06601ebdef319587762ee86f963380", "type": "AAAA", "name": "giftmugweni.com", "content": "2a06:98c1:58::60", "proxied": true, "ttl": 1, "comment": null },
+      { "id": "4c415fcd2ba2cab4f8eae20420170a89", "type": "AAAA", "name": "giftmugweni.com", "content": "2606:4700:7::60", "proxied": true, "ttl": 1, "comment": null },
+      { "id": "607583f81d49aa664fbfd97d6f022c2d", "type": "NS", "name": "giftmugweni.com", "content": "ns3.digitalocean.com", "proxied": false, "ttl": 1, "comment": null },
+      { "id": "2c36ac0542421563a127f8486b8d2cd7", "type": "NS", "name": "giftmugweni.com", "content": "ns1.digitalocean.com", "proxied": false, "ttl": 1, "comment": null },
+      { "id": "1c5bf3356eb134431891c61fef83ece5", "type": "NS", "name": "giftmugweni.com", "content": "ns2.digitalocean.com", "proxied": false, "ttl": 1, "comment": null },
+      { "id": "5bc07c0379fa3af40aaac9c136e4a039", "type": "A", "name": "status-radius.giftmugweni.com", "content": "165.232.33.196", "proxied": true, "ttl": 1, "comment": null },
+      { "id": "30341523fa036231896370435032880a", "type": "A", "name": "erpnext.giftmugweni.com", "content": "139.59.7.15", "proxied": true, "ttl": 1, "comment": "erpnext integration" },
+      { "id": "3ff61f6d4db76b946b210765bf3e88a5", "type": "A", "name": "openpos.giftmugweni.com", "content": "167.99.93.239", "proxied": true, "ttl": 1, "comment": "point of sale testing" },
+      { "id": "f6143b876d2aa967dd35229451669afa", "type": "A", "name": "lessons.giftmugweni.com", "content": "165.232.33.196", "proxied": true, "ttl": 1, "comment": null },
+      { "id": "c4af0ba15415b3c721806a4327517233", "type": "AAAA", "name": "lessons.giftmugweni.com", "content": "2a03:b0c0:1:e0:0:1:6ea7:7001", "proxied": true, "ttl": 1, "comment": null },
+      { "id": "772b5c1edefa489b32b38da13c7399cf", "type": "A", "name": "portal.giftmugweni.com", "content": "161.35.0.160", "proxied": false, "ttl": 1, "comment": "Radius Captive Portal Entry" },
+      { "id": "461c94e568f46b01abee0bff5a02a6d7", "type": "AAAA", "name": "portal.giftmugweni.com", "content": "2604:a880:400:d1:0:4:557f:6001", "proxied": false, "ttl": 1, "comment": "Radius Captive Portal" },
+      { "id": "0f0f5c719a7db09291729ee7e2d954a4", "type": "A", "name": "radius.giftmugweni.com", "content": "165.232.33.196", "proxied": true, "ttl": 1, "comment": "Radius desk ui" },
+      { "id": "32bab3292d3157020868cc911387e0ac", "type": "AAAA", "name": "radius.giftmugweni.com", "content": "2a03:b0c0:1:e0:0:1:6ea7:7001", "proxied": true, "ttl": 1, "comment": "Radius Desk Webui" },
+      { "id": "a1c2fdc2d3be357b9b02abde6c72013a", "type": "CNAME", "name": "bucket.giftmugweni.com", "content": "public.r2.dev", "proxied": true, "ttl": 1, "comment": null, "meta": { "r2_bucket": "public-apps-bucket", "read_only": true } },
+      { "id": "bd7d82c5ed294d7c504cab69c26cfc88", "type": "CNAME", "name": "reader.giftmugweni.com", "content": "plankton-app-5zhzx.ondigitalocean.app", "proxied": true, "ttl": 1, "comment": "AI Voice generation website" },
+      { "id": "ebab75726ac9e78fdf6255b6a84aa9c8", "type": "MX", "name": "send.giftmugweni.com", "content": "feedback-smtp.eu-west-1.amazonses.com", "priority": 10, "proxied": false, "ttl": 1, "comment": null },
+      { "id": "b03982a5a46a6538abe17fececbe6a09", "type": "TXT", "name": "_dmarc.giftmugweni.com", "content": "\"v=DMARC1; p=none;\"", "proxied": false, "ttl": 1, "comment": null },
+      { "id": "02af0c65d7bc74a38b5ac6556c0138a9", "type": "TXT", "name": "giftmugweni.com", "content": "\"google-site-verification=d3bvCk0pp28CptdksIwrm-QogVKzfxi3mgZh9weT7IQ\"", "proxied": false, "ttl": 3600, "comment": null },
+      { "id": "95e4d3670fc13cbd775adf889ca25aa6", "type": "TXT", "name": "resend._domainkey.giftmugweni.com", "content": "\"p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCliD/CVdgDc7NX99U2ezORl+enhXtCiNI6fTTWfbim1DH5kPPSB9neF93tjs+9ZGFziWwv8QqLpGRYv9H5HwgkpFLwrfTI6sGV9rTfMWl1ygdyraow0Nfx0sqD3lHv6L5yyOPxheQDNEmdzYZeZlEUdKmGU8ote4oNd5q73ycFqwIDAQAB\"", "proxied": false, "ttl": 1, "comment": null },
+      { "id": "788662fe26ada44556705af0df24cb95", "type": "TXT", "name": "send.giftmugweni.com", "content": "\"v=spf1 include:amazonses.com ~all\"", "proxied": false, "ttl": 1, "comment": null }
+    ],
+    "fountainoflifefamily.com": [
+      { "id": "06e9248509502018af49e95681e4b611", "type": "CNAME", "name": "fountainoflifefamily.com", "content": "seahorse-app-ll9cl.ondigitalocean.app", "proxied": true, "ttl": 1, "comment": null },
+      { "id": "07bfb3b5e7b0d0fbf1fa332089c002ca", "type": "CNAME", "name": "www.fountainoflifefamily.com", "content": "seahorse-app-ll9cl.ondigitalocean.app", "proxied": true, "ttl": 1, "comment": null }
+    ]
+  },
+  "r2_buckets": [
+    { "name": "apps-bucket", "creation_date": "2026-05-11T18:36:19.040Z" },
+    { "name": "public-apps-bucket", "creation_date": "2026-05-11T18:52:20.363Z", "location": "WEUR", "storage_class": "Standard", "jurisdiction": "default" }
+  ],
+  "r2_custom_domains": [
+    {
+      "bucket": "public-apps-bucket",
+      "domain": "bucket.giftmugweni.com",
+      "zone_id": "b5ddc47f934ad6a572fba57177c9987f",
+      "zone_name": "giftmugweni.com",
+      "enabled": true,
+      "ssl": "active",
+      "ownership": "active",
+      "min_tls": "1.0"
+    }
+  ],
+  "sweep_results_empty": [
+    "pages_projects", "workers_scripts", "d1_databases", "kv_namespaces",
+    "cloudflare_tunnels", "email_routing_rules", "workers_routes"
+  ],
+  "provider_managed_not_imported": [
+    "universal_ssl_certificates (auto-issued by Cloudflare, 1 per zone)",
+    "cloudflare_managed_free_ruleset (account-level, maintained by Cloudflare security team)"
+  ]
+}

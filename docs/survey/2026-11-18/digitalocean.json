@@ -1,0 +1,222 @@
+{
+  "_meta": {
+    "captured": "2026-11-18",
+    "source": "DigitalOcean API v2 via MCP",
+    "note": "Builder input for the Pulumi import. Trimmed to fields needed to write faithful resource declarations. Full raw records were fetched live; IDs are authoritative."
+  },
+  "droplets": [
+    {
+      "id": 484108717,
+      "name": "ubuntu-s-1vcpu-1gb-lon1-01",
+      "size_slug": "s-1vcpu-2gb",
+      "region": "lon1",
+      "image": { "id": 194230265, "type": "snapshot", "name": "ubuntu-s-1vcpu-1gb-lon1-01 2025-07-23:04", "distribution": "Ubuntu" },
+      "vpc_uuid": "11799a23-7c4c-4f53-9c4b-b027138bf246",
+      "tags": ["server", "projects"],
+      "features": ["backups", "monitoring", "droplet_agent", "ipv6", "private_networking"],
+      "ipv4_public": "167.99.93.239",
+      "ipv6_public": "2a03:b0c0:1:e0:0:1:2719:3001",
+      "backup_ids_count": 7,
+      "created_at": "2025-03-20T19:05:49Z"
+    },
+    {
+      "id": 572729769,
+      "name": "internet-cafe-server",
+      "size_slug": "s-1vcpu-1gb",
+      "region": "lon1",
+      "image": { "id": 195932981, "type": "base", "name": "24.04 (LTS) x64", "distribution": "Ubuntu" },
+      "vpc_uuid": "11799a23-7c4c-4f53-9c4b-b027138bf246",
+      "tags": ["radiusdesk", "wireguard"],
+      "features": ["droplet_agent", "ipv6", "private_networking"],
+      "ipv4_public": "165.232.33.196",
+      "ipv6_public": "2a03:b0c0:1:e0:0:1:6ea7:7001",
+      "snapshot_ids": [245021575, 229826940],
+      "created_at": "2026-05-23T13:27:06Z"
+    }
+  ],
+  "apps": [
+    {
+      "id": "c5b54ded-4097-49d2-a776-dc2747096264",
+      "name": "personal-site",
+      "region": "blr",
+      "url": "https://giftmugweni.com",
+      "spec": {
+        "name": "personal-site",
+        "region": "blr",
+        "features": ["buildpack-stack=ubuntu-22"],
+        "alerts": [{ "rule": "DEPLOYMENT_FAILED" }, { "rule": "DOMAIN_FAILED" }],
+        "domains": [{ "domain": "giftmugweni.com", "type": "PRIMARY", "zone": "giftmugweni.com" }],
+        "envs": [
+          {
+            "key": "VITE_GIPHY_API_KEY",
+            "scope": "RUN_AND_BUILD_TIME",
+            "type": "SECRET",
+            "value": "<REDACTED — DO-side encrypted EV[1:...] blob; set via Pulumi secret config on import, never inline>"
+          }
+        ],
+        "ingress": {
+          "rules": [
+            { "component": { "name": "personal-site-build" }, "match": { "path": { "prefix": "/" } } }
+          ]
+        },
+        "static_sites": [
+          {
+            "name": "personal-site-build",
+            "environment_slug": "html",
+            "source_dir": "/",
+            "github": { "branch": "main", "deploy_on_push": true, "repo": "Stelele/personal-site-build" }
+          }
+        ]
+      }
+    },
+    {
+      "id": "27064ad1-4a12-468b-85ff-1fef34e519a7",
+      "name": "voice-generation",
+      "region": "fra",
+      "url": "https://reader.giftmugweni.com",
+      "spec": {
+        "name": "voice-generation",
+        "region": "fra",
+        "features": ["buildpack-stack=ubuntu-22"],
+        "alerts": [{ "rule": "DEPLOYMENT_FAILED" }, { "rule": "DOMAIN_FAILED" }],
+        "domains": [{ "domain": "reader.giftmugweni.com", "type": "PRIMARY" }],
+        "ingress": {
+          "rules": [
+            { "component": { "name": "voice-generation-site-built" }, "match": { "path": { "prefix": "/" } } }
+          ]
+        },
+        "static_sites": [
+          {
+            "name": "voice-generation-site-built",
+            "environment_slug": "html",
+            "source_dir": "/",
+            "github": { "branch": "main", "deploy_on_push": true, "repo": "Stelele/voice-generation-site-built" }
+          }
+        ]
+      }
+    },
+    {
+      "id": "daa7e038-19ef-4162-a713-dd278362fd6f",
+      "name": "fountain-of-life-site",
+      "region": "blr",
+      "url": "https://fountainoflifefamily.com",
+      "spec": {
+        "name": "fountain-of-life-site",
+        "region": "blr",
+        "features": ["buildpack-stack=ubuntu-22"],
+        "alerts": [{ "rule": "DEPLOYMENT_FAILED" }, { "rule": "DOMAIN_FAILED" }],
+        "domains": [{ "domain": "fountainoflifefamily.com", "type": "PRIMARY" }],
+        "ingress": {
+          "rules": [
+            { "component": { "name": "fountain-of-life-build" }, "match": { "authority": { "exact": "" }, "path": { "prefix": "/" } } }
+          ]
+        },
+        "static_sites": [
+          {
+            "name": "fountain-of-life-build",
+            "environment_slug": "html",
+            "source_dir": "/",
+            "github": { "branch": "main", "deploy_on_push": true, "repo": "Stelele/fountain-of-life-build" }
+          }
+        ]
+      }
+    },
+    {
+      "id": "4ac65010-28b6-4851-876c-f273cdc7fead",
+      "name": "njeremoto-dashboards",
+      "region": "blr",
+      "url": "https://dashboard.njeremoto.net",
+      "spec": {
+        "name": "njeremoto-dashboards",
+        "region": "blr",
+        "features": ["buildpack-stack=ubuntu-22"],
+        "alerts": [{ "rule": "DEPLOYMENT_FAILED" }, { "rule": "DOMAIN_FAILED" }],
+        "domains": [{ "domain": "dashboard.njeremoto.net", "type": "PRIMARY" }],
+        "ingress": {
+          "rules": [
+            { "component": { "name": "njeremoto-dashboard-build" }, "match": { "authority": { "exact": "" }, "path": { "prefix": "/" } } }
+          ]
+        },
+        "static_sites": [
+          {
+            "name": "njeremoto-dashboard-build",
+            "environment_slug": "html",
+            "source_dir": "/",
+            "github": { "branch": "main", "deploy_on_push": true, "repo": "Stelele/njeremoto-dashboard-build" }
+          }
+        ]
+      }
+    },
+    {
+      "id": "52b6d77d-baf5-474b-a5b8-276f35e61021",
+      "name": "nbi-app",
+      "region": "ams",
+      "url": "https://nbi-app-vecqs.ondigitalocean.app",
+      "spec": {
+        "name": "nbi-app",
+        "region": "ams",
+        "features": ["buildpack-stack=ubuntu-22"],
+        "alerts": [{ "rule": "DEPLOYMENT_FAILED" }, { "rule": "DOMAIN_FAILED" }],
+        "ingress": {
+          "rules": [
+            { "component": { "name": "nbi-site-build" }, "match": { "authority": { "exact": "" }, "path": { "prefix": "/" } } }
+          ]
+        },
+        "static_sites": [
+          {
+            "name": "nbi-site-build",
+            "environment_slug": "html",
+            "source_dir": "/",
+            "github": { "branch": "main", "deploy_on_push": true, "repo": "Stelele/nbi-site-build" }
+          }
+        ]
+      }
+    }
+  ],
+  "ssh_keys": [
+    {
+      "id": 55949597,
+      "name": "Personal Nobara Machine",
+      "fingerprint": "b0:d4:39:52:a3:a0:c3:de:9e:30:7f:97:e9:a0:6e:45",
+      "public_key": "[managed via Pulumi secret config sshKeyPersonalNobara]"
+    },
+    {
+      "id": 49471038,
+      "name": "New Personal Laptop",
+      "fingerprint": "0f:1a:86:75:65:ad:9e:54:5c:ce:c0:16:97:6e:c5:a5",
+      "public_key": "[managed via Pulumi secret config sshKeyNewPersonalLaptop]"
+    },
+    {
+      "id": 46280680,
+      "name": "Personal Laptop",
+      "fingerprint": "5d:9d:57:58:bc:e0:68:88:e0:e9:7d:b7:9b:d1:d1:89",
+      "public_key": "[REDACTED — key stored via Pulumi secret config]"
+    }
+  ],
+  "dns": {
+    "domain": "giftmugweni.com",
+    "ttl": 1800,
+    "note": "Legacy/duplicate zone — domain is delegated to Cloudflare nameservers. Imported then deleted in cleanup phase.",
+    "records": [
+      { "id": 1767284954, "name": "@", "type": "SOA", "data": "1800", "ttl": 1800 },
+      { "id": 1767284956, "name": "@", "type": "NS", "data": "ns1.digitalocean.com", "ttl": 1800 },
+      { "id": 1767284957, "name": "@", "type": "NS", "data": "ns2.digitalocean.com", "ttl": 1800 },
+      { "id": 1767284958, "name": "@", "type": "NS", "data": "ns3.digitalocean.com", "ttl": 1800 },
+      { "id": 1767410263, "name": "@", "type": "A", "data": "162.159.140.98", "ttl": 30 },
+      { "id": 1767410264, "name": "@", "type": "AAAA", "data": "2606:4700:7::60", "ttl": 30 },
+      { "id": 1767410265, "name": "@", "type": "AAAA", "data": "2a06:98c1:58::60", "ttl": 30 },
+      { "id": 1767410266, "name": "@", "type": "A", "data": "172.66.0.96", "ttl": 30 },
+      { "id": 1772952124, "name": "api", "type": "A", "data": "167.99.93.239", "ttl": 3600 }
+    ]
+  },
+  "sweep_results_empty": [
+    "volumes", "load_balancers", "firewalls", "container_registries",
+    "monitoring_alert_rules", "spaces_cdns", "managed_databases",
+    "kubernetes_clusters", "functions_namespaces", "vector_databases"
+  ],
+  "default_vpcs_auto_created_not_imported": [
+    { "region": "lon1", "id": "11799a23-7c4c-4f53-9c4b-b027138bf246", "ip_range": "10.106.0.0/20" },
+    { "region": "nyc1", "id": "f414954b-84a4-4f77-958f-0e9fb33d6516", "ip_range": "10.116.0.0/20" },
+    { "region": "blr1", "id": "9c76866e-14d1-48d3-9511-5ef976bddf60", "ip_range": "10.122.0.0/20" }
+  ]
+}
