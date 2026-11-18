@@ -15,6 +15,7 @@ return await Deployment.RunAsync(() =>
 
     _ = CloudflareModule.Zones.Create(cfProvider);
     CloudflareModule.Dns.Create(cfProvider);
+    CloudflareModule.R2.Create(cfProvider);
 
     // Resource modules (imported in phase 1) plug in here:
     // DigitalOcean: SshKeys, Droplets, Apps, Dns
