@@ -11,6 +11,7 @@ return await Deployment.RunAsync(() =>
     DigitalOceanModule.SshKeys.Create(doProvider);
     _ = DigitalOceanModule.Droplets.Create(doProvider);
     DigitalOceanModule.Dns.Create(doProvider);
+    _ = DigitalOceanModule.Apps.Create(doProvider);
 
     // Resource modules (imported in phase 1) plug in here:
     // DigitalOcean: SshKeys, Droplets, Apps, Dns
