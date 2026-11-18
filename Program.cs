@@ -9,21 +9,24 @@ return await Deployment.RunAsync(() =>
     var cfProvider = CloudflareModule.ProviderFactory.Create();
 
     DigitalOceanModule.SshKeys.Create(doProvider);
-    _ = DigitalOceanModule.Droplets.Create(doProvider);
+    var (dropletUbuntu, dropletInternetCafe) = DigitalOceanModule.Droplets.Create(doProvider);
     DigitalOceanModule.Dns.Create(doProvider);
-    _ = DigitalOceanModule.Apps.Create(doProvider);
+    var (appPersonalSite, appVoiceGeneration, appFountainOfLife, appNjeremotoDashboards, appNbiApp) = DigitalOceanModule.Apps.Create(doProvider);
 
-    _ = CloudflareModule.Zones.Create(cfProvider);
+    var (zoneGiftmugweniCom, zoneFountainOfLifeFamily) = CloudflareModule.Zones.Create(cfProvider);
     CloudflareModule.Dns.Create(cfProvider);
     CloudflareModule.R2.Create(cfProvider);
 
-    // Resource modules (imported in phase 1) plug in here:
-    // DigitalOcean: SshKeys, Droplets, Apps, Dns
-    // Cloudflare:   Zones, Dns, R2
-
     return new Dictionary<string, object?>
     {
-        // Outputs (app urls, droplet ips, zone ids) land here once the
-        // modules exist.
+        ["dropletUbuntuIp"] = dropletUbuntu.Ipv4Address,
+        ["dropletInternetCafeIp"] = dropletInternetCafe.Ipv4Address,
+        ["appPersonalSiteUrl"] = appPersonalSite.LiveUrl,
+        ["appVoiceGenerationUrl"] = appVoiceGeneration.LiveUrl,
+        ["appFountainOfLifeUrl"] = appFountainOfLife.LiveUrl,
+        ["appNjeremotoDashboardUrl"] = appNjeremotoDashboards.LiveUrl,
+        ["appNbiAppUrl"] = appNbiApp.LiveUrl,
+        ["zoneGiftmugweniId"] = zoneGiftmugweniCom.Id,
+        ["zoneFountainOfLifeId"] = zoneFountainOfLifeFamily.Id,
     };
 });
