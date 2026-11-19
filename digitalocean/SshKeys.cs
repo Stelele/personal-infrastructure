@@ -1,34 +1,36 @@
 using Pulumi;
+using Config = Pulumi.Config;
 using DO = Pulumi.DigitalOcean;
 
 namespace PersonalInfrastructure.DigitalOcean;
 
 /// <summary>
-/// SSH keys registered with DigitalOcean. Imported in phase 1; keys map 1:1 to
-/// the live account (ids 55949597, 49471038, 46280680).
+/// SSH keys registered with DigitalOcean. Public keys are not secret, but per
+/// owner decision 2026-11-19 they live in encrypted stack config (not in this
+/// public repo): set each with `pulumi config set --secret
+/// personal-infrastructure:sshKey&lt;Name&gt;`.
 /// </summary>
 public static class SshKeys
 {
+    private static readonly (string LogicalName, string Name, string ConfigKey)[] Keys =
+    {
+        ("personal-nobara-machine", "Personal Nobara Machine", "sshKeyPersonalNobara"),
+        ("new-personal-laptop", "New Personal Laptop", "sshKeyNewPersonalLaptop"),
+        ("personal-laptop", "Personal Laptop", "sshKeyPersonalLaptop"),
+    };
+
     public static void Create(global::Pulumi.DigitalOcean.Provider provider)
     {
         var opts = new CustomResourceOptions { Provider = provider, Protect = true };
+        var config = new Config("personal-infrastructure");
 
-        new DO.SshKey("personal-nobara-machine", new DO.SshKeyArgs
+        foreach (var (logicalName, name, configKey) in Keys)
         {
-            Name = "Personal Nobara Machine",
-            PublicKey = "[managed via Pulumi secret config sshKeyPersonalNobara]",
-        }, opts);
-
-        new DO.SshKey("new-personal-laptop", new DO.SshKeyArgs
-        {
-            Name = "New Personal Laptop",
-            PublicKey = "[managed via Pulumi secret config sshKeyNewPersonalLaptop]",
-        }, opts);
-
-        new DO.SshKey("personal-laptop", new DO.SshKeyArgs
-        {
-            Name = "Personal Laptop",
-            PublicKey = "[managed via Pulumi secret config sshKeyPersonalLaptop]",
-        }, opts);
+            new DO.SshKey(logicalName, new DO.SshKeyArgs
+            {
+                Name = name,
+                PublicKey = config.RequireSecret(configKey),
+            }, opts);
+        }
     }
 }

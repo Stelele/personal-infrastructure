@@ -4,10 +4,18 @@ using CF = Pulumi.Cloudflare;
 namespace PersonalInfrastructure.Cloudflare;
 
 /// <summary>
-/// All 32 Cloudflare DNS records across the two zones, declared from the
-/// 2026-11-18 survey. TXT content includes the surrounding double quotes the
-/// CF API returns — copied byte-for-byte. (Note: portal/erpnext apex records
-/// are dead and are scheduled for cleanup in phase 3.)
+/// The 24 manually-managed Cloudflare DNS records across the two zones
+/// (2026-11-18 survey). TXT content includes the surrounding double quotes
+/// the CF API returns — copied byte-for-byte.
+///
+/// Deliberately NOT managed here (owner decision 2026-11-19):
+///  • bucket.giftmugweni.com CNAME — auto-created and managed by Cloudflare
+///    when the R2 custom domain (R2.cs) was attached;
+///  • 3 apex NS records pointing at DO nameservers and 4 apex A/AAAA records
+///    whose content is Cloudflare's own anycast IPs — migration artifacts,
+///    left live but unmanaged; deletion in the phase-3 cleanup.
+///  (Note: portal/erpnext records are dead and scheduled for cleanup too,
+///   but they are manual records, so they stay managed until then.)
 /// </summary>
 public static class Dns
 {
@@ -20,13 +28,6 @@ public static class Dns
         ("giftmugweni-com", "giftmugweni-com-api-erp-dashboard-aaaa", "api-erp-dashboard.giftmugweni.com", "AAAA", "2a03:b0c0:1:e0:0:1:2719:3001", true, 1, null, "Api endpoint for Frappe Erpnext backend server api for custom dashboard"),
         ("giftmugweni-com", "giftmugweni-com-api-erp-dashboard-a-2", "api.erp-dashboard.giftmugweni.com", "A", "167.99.93.239", false, 1, null, "Api endpoint for Frappe Erpnext backend server api for custom dashboard"),
         ("giftmugweni-com", "giftmugweni-com-api-erp-dashboard-aaaa-2", "api.erp-dashboard.giftmugweni.com", "AAAA", "2a03:b0c0:1:e0:0:1:2719:3001", false, 1, null, "Api endpoint for Frappe Erpnext backend server api for custom dashboard"),
-        ("giftmugweni-com", "giftmugweni-com--a", "giftmugweni.com", "A", "172.66.0.96", true, 1, null, ""),
-        ("giftmugweni-com", "giftmugweni-com--a-2", "giftmugweni.com", "A", "162.159.140.98", true, 1, null, ""),
-        ("giftmugweni-com", "giftmugweni-com--aaaa", "giftmugweni.com", "AAAA", "2a06:98c1:58::60", true, 1, null, ""),
-        ("giftmugweni-com", "giftmugweni-com--aaaa-2", "giftmugweni.com", "AAAA", "2606:4700:7::60", true, 1, null, ""),
-        ("giftmugweni-com", "giftmugweni-com--ns", "giftmugweni.com", "NS", "ns3.digitalocean.com", false, 1, null, ""),
-        ("giftmugweni-com", "giftmugweni-com--ns-2", "giftmugweni.com", "NS", "ns1.digitalocean.com", false, 1, null, ""),
-        ("giftmugweni-com", "giftmugweni-com--ns-3", "giftmugweni.com", "NS", "ns2.digitalocean.com", false, 1, null, ""),
         ("giftmugweni-com", "giftmugweni-com-status-radius-a", "status-radius.giftmugweni.com", "A", "165.232.33.196", true, 1, null, ""),
         ("giftmugweni-com", "giftmugweni-com-erpnext-a", "erpnext.giftmugweni.com", "A", "139.59.7.15", true, 1, null, "erpnext integration"),
         ("giftmugweni-com", "giftmugweni-com-openpos-a", "openpos.giftmugweni.com", "A", "167.99.93.239", true, 1, null, "point of sale testing"),
@@ -36,7 +37,6 @@ public static class Dns
         ("giftmugweni-com", "giftmugweni-com-portal-aaaa", "portal.giftmugweni.com", "AAAA", "2604:a880:400:d1:0:4:557f:6001", false, 1, null, "Radius Captive Portal"),
         ("giftmugweni-com", "giftmugweni-com-radius-a", "radius.giftmugweni.com", "A", "165.232.33.196", true, 1, null, "Radius desk ui"),
         ("giftmugweni-com", "giftmugweni-com-radius-aaaa", "radius.giftmugweni.com", "AAAA", "2a03:b0c0:1:e0:0:1:6ea7:7001", true, 1, null, "Radius Desk Webui"),
-        ("giftmugweni-com", "giftmugweni-com-bucket-cname", "bucket.giftmugweni.com", "CNAME", "public.r2.dev", true, 1, null, ""),
         ("giftmugweni-com", "giftmugweni-com-reader-cname", "reader.giftmugweni.com", "CNAME", "plankton-app-5zhzx.ondigitalocean.app", true, 1, null, "AI Voice generation website"),
         ("giftmugweni-com", "giftmugweni-com-send-mx", "send.giftmugweni.com", "MX", "feedback-smtp.eu-west-1.amazonses.com", false, 1, 10, ""),
         ("giftmugweni-com", "giftmugweni-com-dmarc-txt", "_dmarc.giftmugweni.com", "TXT", "\"v=DMARC1; p=none;\"", false, 1, null, ""),

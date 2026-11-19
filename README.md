@@ -12,7 +12,7 @@ verified with `pulumi preview` → **no changes**.
                          │                              │
    giftmugweni.com ◄─────┤ zone: giftmugweni.com        │
    fountainoflifefamily.com ◄ zone: fountainoflifefamily.com
-                         │   ├─ 32 DNS records          │
+                         │   ├─ 24 managed DNS records  │
                          │   └─ 2 R2 buckets (WEUR)     │
                          │        └─ bucket.giftmugweni.com (custom domain)
                          └──────────────┬───────────────┘
@@ -43,7 +43,7 @@ verified with `pulumi preview` → **no changes**.
 | File | Resources |
 |---|---|
 | `Provider.cs` | Provider registration (token from secret stack config) |
-| `SshKeys.cs` | 3 SSH keys |
+| `SshKeys.cs` | 3 SSH keys (public keys read from encrypted stack config, not stored in the repo) |
 | `Droplets.cs` | 2 Droplets in `lon1` (default VPC referenced as a constant) |
 | `Apps.cs` | 5 App Platform apps (full live specs incl. alerts, domains, ingress) |
 | `Dns.cs` | Legacy DNS zone `giftmugweni.com` + 9 records *(stale — see oddities)* |
@@ -54,7 +54,7 @@ verified with `pulumi preview` → **no changes**.
 |---|---|
 | `Provider.cs` | Provider registration (scoped API token from secret stack config) |
 | `Zones.cs` | 2 zones: `giftmugweni.com`, `fountainoflifefamily.com` |
-| `Dns.cs` | 32 DNS records (A/AAAA/CNAME/MX/TXT/NS, proxied flags preserved) |
+| `Dns.cs` | 24 DNS records (A/AAAA/CNAME/MX/TXT, proxied flags preserved) — see oddities for what is deliberately unmanaged |
 | `R2.cs` | 2 R2 buckets (WEUR) + custom domain `bucket.giftmugweni.com` |
 
 ## How it works
@@ -71,7 +71,7 @@ verified with `pulumi preview` → **no changes**.
   deletion requires an explicit `pulumi unprotect` first.
 - **Acceptance gate**: after each import batch the code had to reach
   `pulumi preview` → `no changes` before it was committed. The current
-  preview is **60 resources, unchanged**.
+  preview is **52 resources, unchanged**.
 
 ### Adding or changing a resource
 
@@ -90,6 +90,7 @@ verified with `pulumi preview` → **no changes**.
 | Droplet `ubuntu-s-1vcpu-1gb-lon1-01` is actually 2GB | Renaming a droplet recreates it, so the misnomer stays until an intentional rename window. |
 | `njeremoto.net` is not here | Registered at Squarespace; DNS is served by Google Cloud DNS (`ns-cloud-e*`) with Google Workspace MX at the apex. Deliberately outside this project (owner decision 2026-11-18) — no Squarespace DNS API exists. |
 | `personal-site` env `VITE_GIPHY_API_KEY` | Stored as DO-side encrypted `EV[1:…]` envelope; mirrored into Pulumi secret config so the app spec round-trips. |
+| 8 CF records are unmanaged | The `bucket.giftmugweni.com` CNAME is auto-created by Cloudflare when the R2 custom domain is attached; the 3 apex NS records (pointing at DO nameservers) and 4 apex A/AAAA records (content = Cloudflare's own IPs) are migration artifacts. Left live but outside Pulumi; deletion lands in the phase-3 cleanup. |
 
 ## Getting started
 
@@ -98,10 +99,13 @@ dotnet build
 pulumi login                # Pulumi Cloud account
 pulumi stack select prod
 
-# the three secrets (interactive):
+# the six secrets (interactive):
 pulumi config set --secret digitalocean:token              # DO PAT (read+write)
 pulumi config set --secret cloudflare:apiToken             # CF token: R2 edit, DNS edit, zone read
 pulumi config set --secret personal-infrastructure:giphyApiKey   # the EV[1:…] blob
+pulumi config set --secret personal-infrastructure:sshKeyPersonalNobara    # SSH public key
+pulumi config set --secret personal-infrastructure:sshKeyNewPersonalLaptop # SSH public key
+pulumi config set --secret personal-infrastructure:sshKeyPersonalLaptop    # SSH public key
 
 pulumi preview             # should report: no changes
 ```

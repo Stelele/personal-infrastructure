@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Pulumi;
 using Config = Pulumi.Config;
 using DO = Pulumi.DigitalOcean;
@@ -5,265 +6,117 @@ using DO = Pulumi.DigitalOcean;
 namespace PersonalInfrastructure.DigitalOcean;
 
 /// <summary>
-/// The five App Platform apps, declared from their live specs (survey
-/// 2026-11-18). Specs are copied field-for-field — ingress match shapes,
-/// features and domains must match exactly or the import diff never settles.
+/// App Platform apps, declared as data. Adding an app is one entry in
+/// <see cref="Catalog"/> — the loop below builds the full spec from the live
+/// shape every app shares (two alerts, one static site from GitHub, single
+/// ingress rule to that site, optional primary domain, optional env vars).
+/// Returns apps keyed by their live name.
 /// </summary>
 public static class Apps
 {
-    public static (
-        DO.App PersonalSite,
-        DO.App VoiceGeneration,
-        DO.App FountainOfLifeSite,
-        DO.App NjeremotoDashboards,
-        DO.App NbiApp) Create(global::Pulumi.DigitalOcean.Provider provider)
+    private sealed record AppDef(
+        string Name,
+        string Region,
+        string Repo,
+        string StaticSiteName,
+        string Domain,          // "" = no custom domain
+        string? DomainZone,     // zone name for the domain (only personal-site carries one)
+        bool AuthorityExact,    // ingress match.authority.exact: ""
+        (string Key, string Scope, string Type, string SecretKey)? EnvSecret = null);
+
+    private static readonly AppDef[] Catalog =
+    {
+        new("personal-site", "blr", "Stelele/personal-site-build", "personal-site-build",
+            "giftmugweni.com", "giftmugweni.com", AuthorityExact: false,
+            EnvSecret: ("VITE_GIPHY_API_KEY", "RUN_AND_BUILD_TIME", "SECRET", "giphyApiKey")),
+        new("voice-generation", "fra", "Stelele/voice-generation-site-built", "voice-generation-site-built",
+            "reader.giftmugweni.com", null, AuthorityExact: false),
+        new("fountain-of-life-site", "blr", "Stelele/fountain-of-life-build", "fountain-of-life-build",
+            "fountainoflifefamily.com", null, AuthorityExact: true),
+        new("njeremoto-dashboards", "blr", "Stelele/njeremoto-dashboard-build", "njeremoto-dashboard-build",
+            "dashboard.njeremoto.net", null, AuthorityExact: true),
+        new("nbi-app", "ams", "Stelele/nbi-site-build", "nbi-site-build",
+            "", null, AuthorityExact: true),
+    };
+
+    public static Dictionary<string, DO.App> Create(global::Pulumi.DigitalOcean.Provider provider)
     {
         var opts = new CustomResourceOptions { Provider = provider, Protect = true };
+        var config = new Config("personal-infrastructure");
+        var apps = new Dictionary<string, DO.App>();
 
-        var giphyApiKey = new Config("personal-infrastructure").RequireSecret("giphyApiKey");
-
-        var personalSite = new DO.App("personal-site", new DO.AppArgs
+        foreach (var app in Catalog)
         {
-            DeploymentPerPage = 20,
-            Spec = new DO.Inputs.AppSpecArgs
+            var spec = new DO.Inputs.AppSpecArgs
             {
-                Name = "personal-site",
-                Region = "blr",
+                Name = app.Name,
+                Region = app.Region,
                 Alerts =
                 {
                     new DO.Inputs.AppSpecAlertArgs { Rule = "DEPLOYMENT_FAILED" },
                     new DO.Inputs.AppSpecAlertArgs { Rule = "DOMAIN_FAILED" },
                 },
-                Domains = { "giftmugweni.com" },
                 Features = { "buildpack-stack=ubuntu-22" },
-                Envs =
+                Ingress = new DO.Inputs.AppSpecIngressArgs
+                {
+                    Rules =
+                    {
+                        new DO.Inputs.AppSpecIngressRuleArgs
+                        {
+                            Component = new DO.Inputs.AppSpecIngressRuleComponentArgs { Name = app.StaticSiteName },
+                            Match = new DO.Inputs.AppSpecIngressRuleMatchArgs
+                            {
+                                Authority = app.AuthorityExact
+                                    ? new DO.Inputs.AppSpecIngressRuleMatchAuthorityArgs { Exact = "" }
+                                    : null,
+                                Path = new DO.Inputs.AppSpecIngressRuleMatchPathArgs { Prefix = "/" },
+                            },
+                        },
+                    },
+                },
+                StaticSites =
+                {
+                    new DO.Inputs.AppSpecStaticSiteArgs
+                    {
+                        Name = app.StaticSiteName,
+                        EnvironmentSlug = "html",
+                        SourceDir = "/",
+                        Github = new DO.Inputs.AppSpecStaticSiteGithubArgs
+                        {
+                            Branch = "main",
+                            DeployOnPush = true,
+                            Repo = app.Repo,
+                        },
+                    },
+                },
+            };
+
+            if (app.Domain.Length > 0)
+            {
+                spec.Domains = new Pulumi.InputList<string> { app.Domain };
+            }
+            if (app.EnvSecret is { } env)
+            {
+                spec.Envs = new Pulumi.InputList<DO.Inputs.AppSpecEnvArgs>
                 {
                     new DO.Inputs.AppSpecEnvArgs
                     {
-                        Key = "VITE_GIPHY_API_KEY",
-                        Scope = "RUN_AND_BUILD_TIME",
-                        Type = "SECRET",
-                        Value = giphyApiKey,
+                        Key = env.Key,
+                        Scope = env.Scope,
+                        Type = env.Type,
+                        Value = config.RequireSecret(env.SecretKey),
                     },
-                },
-                Ingress = new DO.Inputs.AppSpecIngressArgs
-                {
-                    Rules =
-                    {
-                        new DO.Inputs.AppSpecIngressRuleArgs
-                        {
-                            Component = new DO.Inputs.AppSpecIngressRuleComponentArgs { Name = "personal-site-build" },
-                            Match = new DO.Inputs.AppSpecIngressRuleMatchArgs
-                            {
-                                Path = new DO.Inputs.AppSpecIngressRuleMatchPathArgs { Prefix = "/" },
-                            },
-                        },
-                    },
-                },
-                StaticSites =
-                {
-                    new DO.Inputs.AppSpecStaticSiteArgs
-                    {
-                        Name = "personal-site-build",
-                        EnvironmentSlug = "html",
-                        SourceDir = "/",
-                        Github = new DO.Inputs.AppSpecStaticSiteGithubArgs
-                        {
-                            Branch = "main",
-                            DeployOnPush = true,
-                            Repo = "Stelele/personal-site-build",
-                        },
-                    },
-                },
-            },
-        }, opts);
+                };
+            }
 
-        var voiceGeneration = new DO.App("voice-generation", new DO.AppArgs
-        {
-            DeploymentPerPage = 20,
-            Spec = new DO.Inputs.AppSpecArgs
+            apps[app.Name] = new DO.App(app.Name, new DO.AppArgs
             {
-                Name = "voice-generation",
-                Region = "fra",
-                Alerts =
-                {
-                    new DO.Inputs.AppSpecAlertArgs { Rule = "DEPLOYMENT_FAILED" },
-                    new DO.Inputs.AppSpecAlertArgs { Rule = "DOMAIN_FAILED" },
-                },
-                Domains = { "reader.giftmugweni.com" },
-                Features = { "buildpack-stack=ubuntu-22" },
-                Ingress = new DO.Inputs.AppSpecIngressArgs
-                {
-                    Rules =
-                    {
-                        new DO.Inputs.AppSpecIngressRuleArgs
-                        {
-                            Component = new DO.Inputs.AppSpecIngressRuleComponentArgs { Name = "voice-generation-site-built" },
-                            Match = new DO.Inputs.AppSpecIngressRuleMatchArgs
-                            {
-                                Path = new DO.Inputs.AppSpecIngressRuleMatchPathArgs { Prefix = "/" },
-                            },
-                        },
-                    },
-                },
-                StaticSites =
-                {
-                    new DO.Inputs.AppSpecStaticSiteArgs
-                    {
-                        Name = "voice-generation-site-built",
-                        EnvironmentSlug = "html",
-                        SourceDir = "/",
-                        Github = new DO.Inputs.AppSpecStaticSiteGithubArgs
-                        {
-                            Branch = "main",
-                            DeployOnPush = true,
-                            Repo = "Stelele/voice-generation-site-built",
-                        },
-                    },
-                },
-            },
-        }, opts);
+                // Provider-local default (not part of the DO spec); see ledger.
+                DeploymentPerPage = 20,
+                Spec = spec,
+            }, opts);
+        }
 
-        var fountainOfLifeSite = new DO.App("fountain-of-life-site", new DO.AppArgs
-        {
-            DeploymentPerPage = 20,
-            Spec = new DO.Inputs.AppSpecArgs
-            {
-                Name = "fountain-of-life-site",
-                Region = "blr",
-                Alerts =
-                {
-                    new DO.Inputs.AppSpecAlertArgs { Rule = "DEPLOYMENT_FAILED" },
-                    new DO.Inputs.AppSpecAlertArgs { Rule = "DOMAIN_FAILED" },
-                },
-                Domains = { "fountainoflifefamily.com" },
-                Features = { "buildpack-stack=ubuntu-22" },
-                Ingress = new DO.Inputs.AppSpecIngressArgs
-                {
-                    Rules =
-                    {
-                        new DO.Inputs.AppSpecIngressRuleArgs
-                        {
-                            Component = new DO.Inputs.AppSpecIngressRuleComponentArgs { Name = "fountain-of-life-build" },
-                            Match = new DO.Inputs.AppSpecIngressRuleMatchArgs
-                            {
-                                Authority = new DO.Inputs.AppSpecIngressRuleMatchAuthorityArgs { Exact = "" },
-                                Path = new DO.Inputs.AppSpecIngressRuleMatchPathArgs { Prefix = "/" },
-                            },
-                        },
-                    },
-                },
-                StaticSites =
-                {
-                    new DO.Inputs.AppSpecStaticSiteArgs
-                    {
-                        Name = "fountain-of-life-build",
-                        EnvironmentSlug = "html",
-                        SourceDir = "/",
-                        Github = new DO.Inputs.AppSpecStaticSiteGithubArgs
-                        {
-                            Branch = "main",
-                            DeployOnPush = true,
-                            Repo = "Stelele/fountain-of-life-build",
-                        },
-                    },
-                },
-            },
-        }, opts);
-
-        var njeremotoDashboards = new DO.App("njeremoto-dashboards", new DO.AppArgs
-        {
-            DeploymentPerPage = 20,
-            Spec = new DO.Inputs.AppSpecArgs
-            {
-                Name = "njeremoto-dashboards",
-                Region = "blr",
-                Alerts =
-                {
-                    new DO.Inputs.AppSpecAlertArgs { Rule = "DEPLOYMENT_FAILED" },
-                    new DO.Inputs.AppSpecAlertArgs { Rule = "DOMAIN_FAILED" },
-                },
-                Domains = { "dashboard.njeremoto.net" },
-                Features = { "buildpack-stack=ubuntu-22" },
-                Ingress = new DO.Inputs.AppSpecIngressArgs
-                {
-                    Rules =
-                    {
-                        new DO.Inputs.AppSpecIngressRuleArgs
-                        {
-                            Component = new DO.Inputs.AppSpecIngressRuleComponentArgs { Name = "njeremoto-dashboard-build" },
-                            Match = new DO.Inputs.AppSpecIngressRuleMatchArgs
-                            {
-                                Authority = new DO.Inputs.AppSpecIngressRuleMatchAuthorityArgs { Exact = "" },
-                                Path = new DO.Inputs.AppSpecIngressRuleMatchPathArgs { Prefix = "/" },
-                            },
-                        },
-                    },
-                },
-                StaticSites =
-                {
-                    new DO.Inputs.AppSpecStaticSiteArgs
-                    {
-                        Name = "njeremoto-dashboard-build",
-                        EnvironmentSlug = "html",
-                        SourceDir = "/",
-                        Github = new DO.Inputs.AppSpecStaticSiteGithubArgs
-                        {
-                            Branch = "main",
-                            DeployOnPush = true,
-                            Repo = "Stelele/njeremoto-dashboard-build",
-                        },
-                    },
-                },
-            },
-        }, opts);
-
-        var nbiApp = new DO.App("nbi-app", new DO.AppArgs
-        {
-            DeploymentPerPage = 20,
-            Spec = new DO.Inputs.AppSpecArgs
-            {
-                Name = "nbi-app",
-                Region = "ams",
-                Alerts =
-                {
-                    new DO.Inputs.AppSpecAlertArgs { Rule = "DEPLOYMENT_FAILED" },
-                    new DO.Inputs.AppSpecAlertArgs { Rule = "DOMAIN_FAILED" },
-                },
-                Features = { "buildpack-stack=ubuntu-22" },
-                Ingress = new DO.Inputs.AppSpecIngressArgs
-                {
-                    Rules =
-                    {
-                        new DO.Inputs.AppSpecIngressRuleArgs
-                        {
-                            Component = new DO.Inputs.AppSpecIngressRuleComponentArgs { Name = "nbi-site-build" },
-                            Match = new DO.Inputs.AppSpecIngressRuleMatchArgs
-                            {
-                                Authority = new DO.Inputs.AppSpecIngressRuleMatchAuthorityArgs { Exact = "" },
-                                Path = new DO.Inputs.AppSpecIngressRuleMatchPathArgs { Prefix = "/" },
-                            },
-                        },
-                    },
-                },
-                StaticSites =
-                {
-                    new DO.Inputs.AppSpecStaticSiteArgs
-                    {
-                        Name = "nbi-site-build",
-                        EnvironmentSlug = "html",
-                        SourceDir = "/",
-                        Github = new DO.Inputs.AppSpecStaticSiteGithubArgs
-                        {
-                            Branch = "main",
-                            DeployOnPush = true,
-                            Repo = "Stelele/nbi-site-build",
-                        },
-                    },
-                },
-            },
-        }, opts);
-
-        return (personalSite, voiceGeneration, fountainOfLifeSite, njeremotoDashboards, nbiApp);
+        return apps;
     }
 }
