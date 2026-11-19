@@ -351,3 +351,8 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# Pulumi stack config: holds encrypted secret material; the source of truth
+# is the Pulumi Cloud backend, so keep stack yaml out of the public repo.
+Pulumi.*.yaml
+.superpowers/
